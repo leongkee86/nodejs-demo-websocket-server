@@ -57,11 +57,12 @@ wss.on( 'connection',  ( ws ) =>
             {
                 console.log( "Client disconnected" );
                 broadcastMessage( ws, JSON.stringify( { "type": "message", "data": `"${ ws.connectionId }" left the chat room...` } ), false );
+                broadcastMessage( ws, JSON.stringify( { "type": "users", "data": wss.clients.size } ) );
             }
         );
 
         // Send a welcome message
-        ws.send( JSON.stringify( { "type": "message", "data": "Welcome to the WebSocket server!" } ) );
+        ws.send( JSON.stringify( { "type": "message", "data": "Successfully connected to the WebSocket server!" } ) );
 
         let _username = "User " + getNextUserId();
         ws.connectionId = _username;
@@ -70,6 +71,7 @@ wss.on( 'connection',  ( ws ) =>
         ws.send( JSON.stringify( { "type": "message", "data": `Your username is "${ _username }".` } ) );
 
         broadcastMessage( ws, JSON.stringify( { "type": "message", "data": `"${ _username }" joined the chat room...` } ), false );
+        broadcastMessage( ws, JSON.stringify( { "type": "users", "data": wss.clients.size } ) );
     }
 );
 
