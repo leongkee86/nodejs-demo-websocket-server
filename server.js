@@ -48,16 +48,7 @@ wss.on( 'connection',  ( ws ) =>
         ws.on( 'message', ( message ) =>
             {
                 console.log( `Received: ${ message }` );
-
-                // Broadcast the message to all connected clients
-                wss.clients.forEach( ( client ) =>
-                    {
-                        if (client.readyState === WebSocket.OPEN)
-                        {
-                            client.send( JSON.stringify( { "type": "message", "data": message.toString() } ) );
-                        }
-                    }
-                );
+                broadcastMessage( ws, JSON.stringify( { "type": "message", "data": message.toString() } ) );
             }
         );
 
@@ -65,6 +56,7 @@ wss.on( 'connection',  ( ws ) =>
         ws.on( 'close', () =>
             {
                 console.log( "Client disconnected" );
+                broadcastMessage( ws, JSON.stringify( { "type": "message", "data": `"${ ws.connectionId }" left the chat room...` } ), false );
             }
         );
 
@@ -72,18 +64,12 @@ wss.on( 'connection',  ( ws ) =>
         ws.send( JSON.stringify( { "type": "message", "data": "Welcome to the WebSocket server!" } ) );
 
         let _username = "User " + getNextUserId();
+        ws.connectionId = _username;
 
         ws.send( JSON.stringify( { "type": "id", "data": _username } ) );
         ws.send( JSON.stringify( { "type": "message", "data": `Your username is "${ _username }".` } ) );
 
-        wss.clients.forEach( ( client ) =>
-            {
-                if (client !== ws && client.readyState === WebSocket.OPEN)
-                {
-                    client.send( JSON.stringify( { "type": "message", "data": `"${ _username }" joined the chat room...` } ) );
-                }
-            }
-        );
+        broadcastMessage( ws, JSON.stringify( { "type": "message", "data": `"${ _username }" joined the chat room...` } ), false );
     }
 );
 
@@ -93,4 +79,16 @@ function getNextUserId()
 {
     userId++;
     return userId;
+}
+
+function broadcastMessage( ws, data, includeSender = true )
+{
+    wss.clients.forEach( ( client ) =>
+        {
+            if (( includeSender || client !== ws ) && client.readyState === WebSocket.OPEN)
+            {
+                client.send( data );
+            }
+        }
+    );
 }
