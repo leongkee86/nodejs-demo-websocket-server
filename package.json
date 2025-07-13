@@ -18,6 +18,7 @@
   "homepage": "https://github.com/leongkee86/nodejs-demo-websocket-server#readme",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
     "ws": "^8.18.3"
   }
 }
