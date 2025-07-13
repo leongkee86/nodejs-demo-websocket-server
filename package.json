@@ -16,5 +16,8 @@
     "url": "https://github.com/leongkee86/nodejs-demo-websocket-server/issues"
   },
   "homepage": "https://github.com/leongkee86/nodejs-demo-websocket-server#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
 }
